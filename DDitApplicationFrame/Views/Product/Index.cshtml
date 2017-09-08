@@ -1,0 +1,201 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = null;
+}
+@Styles.Render("~/Scripts/bootstrap/css/1", "~/Scripts/datatables/css/1", "~/Content/1", "~/Scripts/alertjs/themes/1", "~/Scripts/select2/css/1", "~/Scripts/iconpicker/css/1", "~/Scripts/fancyTree/skin-win7/1", "~/Scripts/fileUpload/1")
+@Scripts.Render("~/bundles/js")
+
+<h2>Index</h2>
+<script>
+    $(function () {
+        /*初始化表格配置 本插件为DataTable 具体配置看官网
+          这里楼主进行了二次封装为了简化配置，具体可以看 Scripts -> js ->myJavaScript.js*/
+        var table = $('#NewTable').custromTable({
+            ajax: {
+                url: "/Product/GetProductList",
+                data: function (d) {
+                    debugger;
+                    d.NewTitle = $("#newTitle").val();
+                    return JSON.stringify(d);
+                }
+            },
+            columns: [
+                { data: 'ProductId', visible: false },
+                { data: 'ProductName', title: "产品名称" },
+                { data: 'ProductDesc', title: "产品简介" },
+                {
+                    data: 'CreateTime', title: "创建时间"
+                }
+            ]
+        });
+
+
+        $("#newQuery").click(function () {
+            alertify.log("查询按钮触发了！");
+        });
+
+
+        //角色确认按钮
+        var confrimBtn = function (index) {
+            //debugger;
+            var productId = parent.$("#ProductID").val();
+            var productForm = parent.$("#productForm");
+            if (productForm.valid()) {
+                productForm.ajaxSubmit({
+                    success: function (data) {
+                        //debugger;
+                        if (data.result) {
+                            parent.layer.close(index);
+                            table.ajax.reload(null, productId == "" ? true : false);              //刷新列表
+                            //table.ajax.reload();              //刷新列表
+                            //alertify.success("操作成功！");    //弹出消息日志
+                            parent.layer.msg("操作成功！", { time: 500 });
+                        } else {
+                            alertify.error(data.message);
+                        }
+                    }
+                });
+            }
+        }
+
+        //新增角色层
+        var openCreateRoleLayer = function () {
+            //debugger;
+            mainLayer = parent.layer.open({
+                type: 1,
+                title: "新增产品",
+                area: ['550px', '330px'],
+                closeBtn: 1,
+                shadeClose: false,
+                skin: 'layerStyle',
+                content: $("#creatProductLayer").html(),
+                btn: [dditConfig.btn.close, dditConfig.btn.comfrie],
+                yes: function (index, layero) {
+                    confrimBtn(index);
+                },
+                success: function (i, l) {
+                    parent.$("#productForm").FromEvent(function () {
+                        //验证表单
+                        $("#productForm").validate({
+                            rules: {
+                                ProductName: {
+                                    required: true,
+                                    remote: {
+                                        url: "/Product/ValidProductName",    //后台处理程序
+                                        type: "Post",                   //数据发送方式
+                                        dataType: "json",              //接受数据格式   
+                                        data: {                        //要传递的数据
+                                            ProductId: function () {
+                                                //debugger;
+                                                return $("#ProductId").val();
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            messages: {
+                                ProductName: {
+                                    required: "必填",
+                                    remote: "该产品名已存在！"
+                                }
+                            },
+                            highlight: function (element) {
+                                $(element).closest('.form-group').addClass('has-error');
+                            },
+                            success: function (label) {
+                                label.closest('.form-group').removeClass('has-error');
+                                label.remove();
+                            }
+                        })
+                    });
+                }
+            });
+        };
+
+
+        //新增角色按钮
+        $("#productCreate").click(function () {
+            openCreateRoleLayer();
+        });
+        
+        //编辑按钮操作
+        $("#productEdit").click(function () {
+            //debugger;
+            var cc = table.rows('.selected')
+            if (cc[0].length > 0) {
+                var model = cc.data();         // 得到操作的实体
+                openCreateRoleLayer();
+                parent.layer.title("编辑产品", mainLayer)
+                parent.$("#productForm").setForm(model[0]);  //给表单赋值
+
+            } else {
+                parent.layer.msg("请选择一条操作信息！");
+            }
+        });
+
+
+        //删除按钮操作
+        $("#productDelete").click(function () {
+            var cc = table.rows('.selected')
+            if (cc[0].length > 0) {
+                var model = cc.data();
+                parent.layer.confirm("确定要删除该信息吗！", dditConfig.hintLayer, function () {
+                    //debugger;
+                    $.post("/Product/RemoveProduct", { productID: model[0].ProductId }, function (data) {
+                        if (data.result) {
+                            cc.remove().draw(false);
+                            parent.layer.close(parent.layer.index);
+                            //alertify.success(data.message);
+                            parent.layer.msg(data.message);
+                        } else {
+                            //alertify.error(data.message);
+                            parent.layer.msg(data.message);
+                        }
+                    });
+                });wrtyr
+            } else {
+                //alertify.log("请选择一条操作信息！");
+                parent.layer.msg("请选择一条操作信息！");
+            }
+        });
+
+    })
+</script>
+<div class="margin w100f xoverhide">
+    <div class="panel panel-default" style="margin-top: 10px">
+        <ul class="list-group">
+            @Html.Action("CreateButtonByMuen", "Button", new { menuId = 48, mark = "product" })
+            <li class="list-group-item">
+                <form class="form-inline">
+                    <div class="form-group">
+                        <label for="newTitle">产品名称</label>
+                        <input type="text" class="form-control" name="ProductName" id="ProductName" placeholder="admin">
+                    </div>
+                    <button type="button" class="btn btn-info " id="newQuery">
+                        <span class="glyphicon glyphicon-search" aria-hidden="true"></span> 查询
+                    </button>
+                </form>
+            </li>
+        </ul>
+    </div>
+    <table id="NewTable" class="table table-bordered table-striped w100f" cellspacing="0"></table>
+</div>
+
+<div id="creatProductLayer" class="displayn">
+    <form class="form-horizontal formPadding" id="productForm" method="post" action="/Product/AddOrEditProduct">
+        <div class="form-group">
+            @Html.Hidden("ProductId")
+            <label for="Name" class="col-sm-2 control-label labsty">产品名称<span style="color:red">*</span></label>
+            <div class="col-sm-10 pad-r20">
+                <input type="text" class="form-control" maxlength="15" name="ProductName" id="Name" placeholder="产品名称">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="ProductDesc" class="col-sm-2 control-label labsty">产品简介&nbsp;&nbsp;</label>
+            <div class="col-sm-10 pad-r20">
+                <textarea name="ProductDesc" id="ProductDesc" class="form-control" rows="6" maxlength="200" placeholder="产品简介"></textarea>
+            </div>
+        </div>
+    </form>
+</div>

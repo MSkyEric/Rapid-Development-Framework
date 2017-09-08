@@ -1,0 +1,9 @@
+D:\project\DDit-Rapid-Development-Framework-master\DDit-Rapid-Development-Framework-master\DDit.Component.Data\bin\Release\DDit.Component.Data.dll
+D:\project\DDit-Rapid-Development-Framework-master\DDit-Rapid-Development-Framework-master\DDit.Component.Data\bin\Release\DDit.Component.Data.pdb
+D:\project\DDit-Rapid-Development-Framework-master\DDit-Rapid-Development-Framework-master\DDit.Component.Data\bin\Release\EntityFramework.dll
+D:\project\DDit-Rapid-Development-Framework-master\DDit-Rapid-Development-Framework-master\DDit.Component.Data\bin\Release\EntityFramework.SqlServer.dll
+D:\project\DDit-Rapid-Development-Framework-master\DDit-Rapid-Development-Framework-master\DDit.Component.Data\bin\Release\EntityFramework.xml
+D:\project\DDit-Rapid-Development-Framework-master\DDit-Rapid-Development-Framework-master\DDit.Component.Data\bin\Release\EntityFramework.SqlServer.xml
+D:\project\DDit-Rapid-Development-Framework-master\DDit-Rapid-Development-Framework-master\DDit.Component.Data\obj\Release\DDit.Component.Data.csprojResolveAssemblyReference.cache
+D:\project\DDit-Rapid-Development-Framework-master\DDit-Rapid-Development-Framework-master\DDit.Component.Data\obj\Release\DDit.Component.Data.dll
+D:\project\DDit-Rapid-Development-Framework-master\DDit-Rapid-Development-Framework-master\DDit.Component.Data\obj\Release\DDit.Component.Data.pdb
